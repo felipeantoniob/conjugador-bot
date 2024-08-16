@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 	"os/signal"
@@ -20,4 +21,11 @@ func WaitForShutdown() {
 
 	// Print the received signal (for debugging or logging purposes)
 	fmt.Printf("Received shutdown signal: %v\n", sig)
+}
+
+func NullStringToString(ns sql.NullString) string {
+	if ns.Valid {
+		return ns.String
+	}
+	return ""
 }
