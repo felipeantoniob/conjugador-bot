@@ -11,7 +11,9 @@ import (
 )
 
 const (
-	errTenseData = "Error getting tense data"
+	errTenseData            = "Error getting tense data"
+	errSendingResponse      = "Failed to send interaction response"
+	errSendingErrorResponse = "Failed to send error interaction response"
 )
 
 func OnReady(s *discordgo.Session, r *discordgo.Ready) {
@@ -113,21 +115,34 @@ func createConjugationEmbed(infinitive string, verb *db.Verb) *discordgo.Message
 	}
 }
 
-func sendConjugationResponse(s *discordgo.Session, i *discordgo.Interaction, embed *discordgo.MessageEmbed) {
-	s.InteractionRespond(i, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: []*discordgo.MessageEmbed{embed},
-		},
-	})
-}
+// sendConjugationResponse sends a response with the provided embed message
+func sendConjugationResponse(session *discordgo.Session, interaction *discordgo.Interaction, embed *discordgo.MessageEmbed) {
+	responseData := &discordgo.InteractionResponseData{
+		Embeds: []*discordgo.MessageEmbed{embed},
+	}
 
-func SendErrorInteractionResponse(s *discordgo.Session, interaction *discordgo.Interaction, errorMessage string) {
 	response := &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: errorMessage,
-		},
+		Data: responseData,
 	}
-	s.InteractionRespond(interaction, response)
+
+	if err := session.InteractionRespond(interaction, response); err != nil {
+		fmt.Printf("%s: %v\n", errSendingResponse, err)
+	}
+}
+
+// SendErrorInteractionResponse sends an error message as a response to a Discord interaction
+func SendErrorInteractionResponse(session *discordgo.Session, interaction *discordgo.Interaction, errorMessage string) {
+	responseData := &discordgo.InteractionResponseData{
+		Content: errorMessage,
+	}
+
+	response := &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: responseData,
+	}
+
+	if err := session.InteractionRespond(interaction, response); err != nil {
+		fmt.Printf("%s: %v\n", errSendingErrorResponse, err)
+	}
 }
