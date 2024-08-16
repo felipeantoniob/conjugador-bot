@@ -1,4 +1,4 @@
-package commands
+package discord
 
 import (
 	"context"
@@ -16,11 +16,11 @@ const (
 	errSendingErrorResponse = "Failed to send error interaction response"
 )
 
-func OnReady(s *discordgo.Session, r *discordgo.Ready) {
+func onReady(s *discordgo.Session, r *discordgo.Ready) {
 	log.Printf("Logged in as: %v#%v", r.User.Username, r.User.Discriminator)
 }
 
-func HandleInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func handleInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	if handler, ok := commandHandlers[i.ApplicationCommandData().Name]; ok {
 		handler(s, i)
 	} else {
@@ -28,7 +28,7 @@ func HandleInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 }
 
-func HandleConjugate(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func handleConjugate(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	options := i.ApplicationCommandData().Options
 	optionMap := makeOptionMap(options)
 

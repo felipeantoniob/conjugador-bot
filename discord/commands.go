@@ -1,10 +1,10 @@
-package commands
+package discord
 
 import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var Commands = []*discordgo.ApplicationCommand{
+var commands = []*discordgo.ApplicationCommand{
 	{
 		Name:        "conjugate",
 		Description: "Provides conjugation details for a given Spanish verb.",
