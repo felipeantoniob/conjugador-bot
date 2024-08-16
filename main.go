@@ -20,7 +20,7 @@ const (
 
 func main() {
 	if err := run(); err != nil {
-		log.Fatalf("Error running the bot: %v", err)
+		log.Fatalf("%v", err)
 	}
 }
 
@@ -37,7 +37,7 @@ func run() error {
 	}
 
 	// Initialize the database
-	if err := db.InitDB(); err != nil {
+	if err := db.InitDB("./db/verbs.db"); err != nil {
 		return err
 	}
 	defer db.CloseDB()
