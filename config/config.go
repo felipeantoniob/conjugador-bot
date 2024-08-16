@@ -8,24 +8,24 @@ import (
 )
 
 const (
+	defaultEnvFilePath = ".env.local"
+
 	botTokenKey = "BOT_TOKEN"
 	guildIDKey  = "GUILD_ID"
 
-	errMsgLoadEnvFile = "failed to load environment file %s: %w"
-	errMsgMissingVars = "required environment variables are missing: %s"
+	errLoadEnvFile = "failed to load environment file %s: %w"
+	errMissingVars = "required environment variables are missing: %s"
 )
 
-var defaultEnvFilePath = ".env.local"
+// LoadEnv loads environment variables from the default file.
+func LoadEnv() error {
+	return LoadEnvFromFile(defaultEnvFilePath)
+}
 
-// LoadEnv loads environment variables from the specified file.
-func LoadEnv(envFilePath ...string) error {
-	filePath := defaultEnvFilePath
-	if len(envFilePath) > 0 {
-		filePath = envFilePath[0]
-	}
-
-	if err := godotenv.Load(filePath); err != nil {
-		return fmt.Errorf(errMsgLoadEnvFile, filePath, err)
+// LoadEnvFromFile loads environment variables from the specified file.
+func LoadEnvFromFile(envFilePath string) error {
+	if err := godotenv.Load(envFilePath); err != nil {
+		return fmt.Errorf(errLoadEnvFile, envFilePath, err)
 	}
 	return nil
 }
@@ -39,12 +39,13 @@ func GetRequiredEnvVars() (string, string, error) {
 	if botToken == "" {
 		missingVars = append(missingVars, botTokenKey)
 	}
+
 	if guildID == "" {
 		missingVars = append(missingVars, guildIDKey)
 	}
 
 	if len(missingVars) > 0 {
-		return "", "", fmt.Errorf(errMsgMissingVars, missingVars)
+		return "", "", fmt.Errorf(errMissingVars, missingVars)
 	}
 
 	return botToken, guildID, nil
