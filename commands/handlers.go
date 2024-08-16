@@ -1,11 +1,11 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/felipeantoniob/goConjugationBot/database"
 	"github.com/felipeantoniob/goConjugationBot/db"
 	"github.com/felipeantoniob/goConjugationBot/utils"
 )
@@ -80,30 +80,19 @@ func extractInfinitiveAndTense(optionMap map[string]*discordgo.ApplicationComman
 }
 
 func fetchVerbFromDB(infinitive string, tenseMoodObject TenseMood) (*db.Verb, error) {
-	database, err := database.GetDB()
+	ctx := context.Background()
+	sqlDB, err := db.GetDB()
 	if err != nil {
 		return nil, err
 	}
 
-	rows, err := database.Query(
-		"SELECT * FROM verbs WHERE infinitive = ? AND mood = ? AND tense = ?",
-		infinitive, tenseMoodObject.Mood, tenseMoodObject.Tense,
-	)
+	queries := db.New(sqlDB)
+
+	verb, err := queries.GetVerbByInfinitiveMoodTense(ctx, db.GetVerbByInfinitiveMoodTenseParams{Infinitive: infinitive, Mood: tenseMoodObject.Mood, Tense: tenseMoodObject.Tense})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	var verb db.Verb
-	if rows.Next() {
-		if err := rows.Scan(
-			&verb.Infinitive, &verb.Mood, &verb.Tense, &verb.VerbEnglish,
-			&verb.Form1s, &verb.Form2s, &verb.Form3s,
-			&verb.Form1p, &verb.Form2p, &verb.Form3p,
-		); err != nil {
-			return nil, err
-		}
-	}
 	return &verb, nil
 }
 

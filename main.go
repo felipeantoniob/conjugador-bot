@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/felipeantoniob/goConjugationBot/commands"
 	"github.com/felipeantoniob/goConjugationBot/config"
-	"github.com/felipeantoniob/goConjugationBot/database"
+	"github.com/felipeantoniob/goConjugationBot/db"
 	"github.com/felipeantoniob/goConjugationBot/utils"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -17,19 +17,6 @@ const (
 	errBotInit       = "Error initializing bot"
 	errDiscordWSOpen = "Error opening websocket connection to Discord"
 )
-
-type Verb struct {
-	Infinitive  string
-	Mood        string
-	Tense       string
-	VerbEnglish string
-	Form1s      string
-	Form2s      string
-	Form3s      string
-	Form1p      string
-	Form2p      string
-	Form3p      string
-}
 
 func main() {
 	if err := run(); err != nil {
@@ -50,10 +37,10 @@ func run() error {
 	}
 
 	// Initialize the database
-	if err := database.InitDB(); err != nil {
+	if err := db.InitDB(); err != nil {
 		return err
 	}
-	defer database.CloseDB()
+	defer db.CloseDB()
 
 	// Create a new Discord session
 	dgSession, err := discordgo.New("Bot " + botToken)
