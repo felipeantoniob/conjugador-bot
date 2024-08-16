@@ -13,14 +13,9 @@ import (
 )
 
 const (
-	errEnvLoad           = "error loading env variables"
-	ErrBotInit           = "Error initializing bot"
-	ErrCmdCreate         = "Cannot create command"
-	ErrTenseData         = "Error getting tense data"
-	ErrDBQuery           = "Error querying database"
-	ErrDBScan            = "Error scanning database row"
-	ErrDiscordWSOpen     = "Error opening websocket connection to Discord"
-	ErrTenseNameNotFound = "Tense name not found"
+	errEnvLoad       = "error loading env variables"
+	errBotInit       = "Error initializing bot"
+	errDiscordWSOpen = "Error opening websocket connection to Discord"
 )
 
 type Verb struct {
@@ -63,13 +58,13 @@ func run() error {
 	// Create a new Discord session
 	dgSession, err := discordgo.New("Bot " + botToken)
 	if err != nil {
-		return fmt.Errorf("%s: %w", ErrBotInit, err)
+		return fmt.Errorf("%s: %w", errBotInit, err)
 	}
 
 	dgSession.Identify.Intents = discordgo.IntentsGuildMessages
 
 	if err := dgSession.Open(); err != nil {
-		return fmt.Errorf("%s: %w", ErrDiscordWSOpen, err)
+		return fmt.Errorf("%s: %w", errDiscordWSOpen, err)
 	}
 	defer dgSession.Close()
 
