@@ -4,137 +4,145 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
-
-	"github.com/felipeantoniob/goConjugationBot/models"
 )
+
+type TenseMood struct {
+	Mood  string `json:"mood"`
+	Tense string `json:"tense"`
+}
+
+type TenseMoodChoice struct {
+	Name  string    `json:"name"`
+	Value TenseMood `json:"value"`
+}
 
 const (
 	errTenseNameNotFound = "Tense name not found"
 )
 
-var TenseMoodChoices = []models.TenseMoodChoice{
+var TenseMoodChoices = []TenseMoodChoice{
 	{
 		Name: "Present",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Indicativo",
 			Tense: "Presente",
 		},
 	},
 	{
 		Name: "Preterite",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Indicativo",
 			Tense: "Pretérito",
 		},
 	},
 	{
 		Name: "Imperfect",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Indicativo",
 			Tense: "Imperfecto",
 		},
 	},
 	{
 		Name: "Conditional",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Indicativo",
 			Tense: "Condicional",
 		},
 	},
 	{
 		Name: "Future",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Indicativo",
 			Tense: "Futuro",
 		},
 	},
 	{
 		Name: "Present perfect",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Indicativo",
 			Tense: "Presente",
 		},
 	},
 	{
 		Name: "Preterite perfect (Past anterior)",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Indicativo",
 			Tense: "Pretérito anterior",
 		},
 	},
 	{
 		Name: "Pluperfect (Past perfect)",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Indicativo",
 			Tense: "Pluscuamperfecto",
 		},
 	},
 	{
 		Name: "Conditional perfect",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Indicativo",
 			Tense: "Condicional perfecto",
 		},
 	},
 	{
 		Name: "Future perfect",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Indicativo",
 			Tense: "Futuro perfecto",
 		},
 	},
 	{
 		Name: "Present subjunctive",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Subjuntivo",
 			Tense: "Presente",
 		},
 	},
 	{
 		Name: "Imperfect subjunctive",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Subjuntivo",
 			Tense: "Imperfecto",
 		},
 	},
 	{
 		Name: "Future subjunctive",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Subjuntivo",
 			Tense: "Futuro",
 		},
 	},
 	{
 		Name: "Present perfect subjunctive",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Subjuntivo",
 			Tense: "Presente perfecto",
 		},
 	},
 	{
 		Name: "Pluperfect (Past perfect) subjunctive",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Subjuntivo",
 			Tense: "Pluscuamperfecto",
 		},
 	},
 	{
 		Name: "Future perfect subjunctive",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Subjuntivo",
 			Tense: "Pretérito anterior",
 		},
 	},
 	{
 		Name: "Imperative",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Imperativo Afirmativo",
 			Tense: "Presente",
 		},
 	},
 	{
 		Name: "Negative Imperative",
-		Value: models.TenseMood{
+		Value: TenseMood{
 			Mood:  "Imperativo Negativo",
 			Tense: "Presente",
 		},
@@ -154,15 +162,15 @@ func GetTenseMoodChoices() []*discordgo.ApplicationCommandOptionChoice {
 	return TenseMoodChoicesWithNameAsValue
 }
 
-func GetValueByName(name string) (models.TenseMood, error) {
-	choicesMap := make(map[string]models.TenseMood)
+func GetValueByName(name string) (TenseMood, error) {
+	choicesMap := make(map[string]TenseMood)
 	for _, choice := range TenseMoodChoices {
 		choicesMap[choice.Name] = choice.Value
 	}
 
 	value, ok := choicesMap[name]
 	if !ok {
-		return models.TenseMood{}, fmt.Errorf("%s: %s", errTenseNameNotFound, name)
+		return TenseMood{}, fmt.Errorf("%s: %s", errTenseNameNotFound, name)
 	}
 
 	return value, nil

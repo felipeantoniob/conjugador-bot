@@ -7,7 +7,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/felipeantoniob/goConjugationBot/database"
 	"github.com/felipeantoniob/goConjugationBot/db"
-	"github.com/felipeantoniob/goConjugationBot/models"
 	"github.com/felipeantoniob/goConjugationBot/utils"
 )
 
@@ -80,7 +79,7 @@ func extractInfinitiveAndTense(optionMap map[string]*discordgo.ApplicationComman
 	return infinitive, tense, err
 }
 
-func fetchVerbFromDB(infinitive string, tenseMoodObject models.TenseMood) (*db.Verb, error) {
+func fetchVerbFromDB(infinitive string, tenseMoodObject TenseMood) (*db.Verb, error) {
 	database, err := database.GetDB()
 	if err != nil {
 		return nil, err
