@@ -9,12 +9,12 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/joho/godotenv"
+	"github.com/felipeantoniob/goConjugationBot/config"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
-	ErrEnvLoad           = "Error loading env variables"
+	errEnvLoad           = "error loading env variables"
 	ErrBotInit           = "Error initializing bot"
 	ErrDBOpen            = "Error opening database connection"
 	ErrCmdCreate         = "Cannot create command"
@@ -70,35 +70,39 @@ type Verb struct {
 }
 
 func main() {
-	err := godotenv.Load(".env.local")
-	if err != nil {
-		log.Fatal(ErrEnvLoad)
+	if err := run(); err != nil {
+		log.Fatalf("Error running the bot: %v", err)
+	}
+}
+
+func run() error {
+	// Load environment variables
+	if err := config.LoadEnv(); err != nil {
+		return fmt.Errorf("%s: %w", errEnvLoad, err)
 	}
 
-	botToken := os.Getenv("BOT_TOKEN")
-	guildID := os.Getenv("GUILD_ID")
-
-	if botToken == "" || guildID == "" {
-		log.Fatal(ErrMissingVars)
+	// Retrieve required environment variables
+	botToken, guildID, err1 := config.GetRequiredEnvVars()
+	if err1 != nil {
+		return err1
 	}
 
+	var err error
 	db, err = sql.Open("sqlite3", "verbs.db")
 	if err != nil {
-		log.Fatalf("%s: %v", ErrDBOpen, err)
+		return fmt.Errorf("%s: %v", ErrDBOpen, err)
 	}
 	defer db.Close()
 
 	s, err := discordgo.New("Bot " + botToken)
 	if err != nil {
-		log.Fatalf("%s: %v", ErrBotInit, err)
+		return fmt.Errorf("%s: %v", ErrBotInit, err)
 	}
 
 	s.Identify.Intents = discordgo.IntentsGuildMessages
 
-	err = s.Open()
-	if err != nil {
-		fmt.Printf("%s: %v\n", ErrDiscordWSOpen, err)
-		return
+	if err := s.Open(); err != nil {
+		return fmt.Errorf("%s: %v", ErrDiscordWSOpen, err)
 	}
 	defer s.Close()
 
@@ -106,10 +110,12 @@ func main() {
 
 	registerCommands(s, guildID)
 
-	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+	fmt.Println("Bot is now running. Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
+
+	return nil
 }
 
 func registerCommands(s *discordgo.Session, guildID string) {
