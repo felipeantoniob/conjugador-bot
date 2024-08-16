@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -10,25 +9,22 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/felipeantoniob/goConjugationBot/config"
+	"github.com/felipeantoniob/goConjugationBot/database"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
 	errEnvLoad           = "error loading env variables"
 	ErrBotInit           = "Error initializing bot"
-	ErrDBOpen            = "Error opening database connection"
 	ErrCmdCreate         = "Cannot create command"
 	ErrTenseData         = "Error getting tense data"
 	ErrDBQuery           = "Error querying database"
 	ErrDBScan            = "Error scanning database row"
-	ErrMissingVars       = "BOT_TOKEN and GUILD_ID environment variables are required"
 	ErrDiscordWSOpen     = "Error opening websocket connection to Discord"
 	ErrTenseNameNotFound = "Tense name not found"
 )
 
 var (
-	db *sql.DB
-
 	commands = []*discordgo.ApplicationCommand{
 		{
 			Name:        "conjugate",
@@ -87,12 +83,11 @@ func run() error {
 		return err1
 	}
 
-	var err error
-	db, err = sql.Open("sqlite3", "verbs.db")
-	if err != nil {
-		return fmt.Errorf("%s: %v", ErrDBOpen, err)
+	// Initialize the database
+	if err := database.InitDB(); err != nil {
+		return err
 	}
-	defer db.Close()
+	defer database.CloseDB()
 
 	s, err := discordgo.New("Bot " + botToken)
 	if err != nil {
@@ -162,6 +157,10 @@ func handleConjugate(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
+	db, err := database.GetDB()
+	if err != nil {
+		sendErrorInteractionResponse(s, i.Interaction, "Error connecting to database.")
+	}
 	rows, err := db.Query("SELECT * FROM verbs WHERE infinitive = ? AND MOOD = ? AND tense = ?", infinitive, tenseMoodObject.Mood, tenseMoodObject.Tense)
 	if err != nil {
 		log.Println(ErrDBQuery, err)
