@@ -33,26 +33,26 @@ func handleConjugate(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	infinitive, tense, err := extractInfinitiveAndTense(optionMap)
 	if err != nil {
 		log.Println("Missing required options:", err)
-		SendErrorInteractionResponse(s, i.Interaction, "Infinitive or tense not provided.")
+		sendErrorInteractionResponse(s, i.Interaction, "Infinitive or tense not provided.")
 		return
 	}
 
-	tenseMoodObject, err := GetValueByName(tense)
+	tenseMoodObject, err := getValueByName(tense)
 	if err != nil {
 		log.Println(errTenseData, err)
-		SendErrorInteractionResponse(s, i.Interaction, "Error getting tense data.")
+		sendErrorInteractionResponse(s, i.Interaction, "Error getting tense data.")
 		return
 	}
 
 	verb, err := fetchVerbFromDB(infinitive, tenseMoodObject)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			SendErrorInteractionResponse(s, i.Interaction, "Verb not found.")
+			sendErrorInteractionResponse(s, i.Interaction, "Verb not found.")
 			return
 		}
 
 		log.Println("Error fetching verb:", err)
-		SendErrorInteractionResponse(s, i.Interaction, "Error querying database.")
+		sendErrorInteractionResponse(s, i.Interaction, "Error querying database.")
 		return
 	}
 

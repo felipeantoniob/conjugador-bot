@@ -6,11 +6,13 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// TenseMood represents a grammatical mood and tense.
 type TenseMood struct {
 	Mood  string `json:"mood"`
 	Tense string `json:"tense"`
 }
 
+// TenseMoodChoice represents a choice for a tense mood.
 type TenseMoodChoice struct {
 	Name  string    `json:"name"`
 	Value TenseMood `json:"value"`
@@ -20,158 +22,56 @@ const (
 	errTenseNameNotFound = "Tense name not found"
 )
 
-var TenseMoodChoices = []TenseMoodChoice{
-	{
-		Name: "Present",
-		Value: TenseMood{
-			Mood:  "Indicativo",
-			Tense: "Presente",
-		},
-	},
-	{
-		Name: "Preterite",
-		Value: TenseMood{
-			Mood:  "Indicativo",
-			Tense: "Pretérito",
-		},
-	},
-	{
-		Name: "Imperfect",
-		Value: TenseMood{
-			Mood:  "Indicativo",
-			Tense: "Imperfecto",
-		},
-	},
-	{
-		Name: "Conditional",
-		Value: TenseMood{
-			Mood:  "Indicativo",
-			Tense: "Condicional",
-		},
-	},
-	{
-		Name: "Future",
-		Value: TenseMood{
-			Mood:  "Indicativo",
-			Tense: "Futuro",
-		},
-	},
-	{
-		Name: "Present perfect",
-		Value: TenseMood{
-			Mood:  "Indicativo",
-			Tense: "Presente",
-		},
-	},
-	{
-		Name: "Preterite perfect (Past anterior)",
-		Value: TenseMood{
-			Mood:  "Indicativo",
-			Tense: "Pretérito anterior",
-		},
-	},
-	{
-		Name: "Pluperfect (Past perfect)",
-		Value: TenseMood{
-			Mood:  "Indicativo",
-			Tense: "Pluscuamperfecto",
-		},
-	},
-	{
-		Name: "Conditional perfect",
-		Value: TenseMood{
-			Mood:  "Indicativo",
-			Tense: "Condicional perfecto",
-		},
-	},
-	{
-		Name: "Future perfect",
-		Value: TenseMood{
-			Mood:  "Indicativo",
-			Tense: "Futuro perfecto",
-		},
-	},
-	{
-		Name: "Present subjunctive",
-		Value: TenseMood{
-			Mood:  "Subjuntivo",
-			Tense: "Presente",
-		},
-	},
-	{
-		Name: "Imperfect subjunctive",
-		Value: TenseMood{
-			Mood:  "Subjuntivo",
-			Tense: "Imperfecto",
-		},
-	},
-	{
-		Name: "Future subjunctive",
-		Value: TenseMood{
-			Mood:  "Subjuntivo",
-			Tense: "Futuro",
-		},
-	},
-	{
-		Name: "Present perfect subjunctive",
-		Value: TenseMood{
-			Mood:  "Subjuntivo",
-			Tense: "Presente perfecto",
-		},
-	},
-	{
-		Name: "Pluperfect (Past perfect) subjunctive",
-		Value: TenseMood{
-			Mood:  "Subjuntivo",
-			Tense: "Pluscuamperfecto",
-		},
-	},
-	{
-		Name: "Future perfect subjunctive",
-		Value: TenseMood{
-			Mood:  "Subjuntivo",
-			Tense: "Pretérito anterior",
-		},
-	},
-	{
-		Name: "Imperative",
-		Value: TenseMood{
-			Mood:  "Imperativo Afirmativo",
-			Tense: "Presente",
-		},
-	},
-	{
-		Name: "Negative Imperative",
-		Value: TenseMood{
-			Mood:  "Imperativo Negativo",
-			Tense: "Presente",
-		},
-	},
+// tenseMoodChoices holds the available tense mood choices.
+var tenseMoodChoices = []TenseMoodChoice{
+	{"Present", TenseMood{"Indicativo", "Presente"}},
+	{"Preterite", TenseMood{"Indicativo", "Pretérito"}},
+	{"Imperfect", TenseMood{"Indicativo", "Imperfecto"}},
+	{"Conditional", TenseMood{"Indicativo", "Condicional"}},
+	{"Future", TenseMood{"Indicativo", "Futuro"}},
+	{"Present perfect", TenseMood{"Indicativo", "Presente"}},
+	{"Preterite perfect (Past anterior)", TenseMood{"Indicativo", "Pretérito anterior"}},
+	{"Pluperfect (Past perfect)", TenseMood{"Indicativo", "Pluscuamperfecto"}},
+	{"Conditional perfect", TenseMood{"Indicativo", "Condicional perfecto"}},
+	{"Future perfect", TenseMood{"Indicativo", "Futuro perfecto"}},
+	{"Present subjunctive", TenseMood{"Subjuntivo", "Presente"}},
+	{"Imperfect subjunctive", TenseMood{"Subjuntivo", "Imperfecto"}},
+	{"Future subjunctive", TenseMood{"Subjuntivo", "Futuro"}},
+	{"Present perfect subjunctive", TenseMood{"Subjuntivo", "Presente perfecto"}},
+	{"Pluperfect (Past perfect) subjunctive", TenseMood{"Subjuntivo", "Pluscuamperfecto"}},
+	{"Future perfect subjunctive", TenseMood{"Subjuntivo", "Pretérito anterior"}},
+	{"Imperative", TenseMood{"Imperativo Afirmativo", "Presente"}},
+	{"Negative Imperative", TenseMood{"Imperativo Negativo", "Presente"}},
 }
 
-func GetTenseMoodChoices() []*discordgo.ApplicationCommandOptionChoice {
-	TenseMoodChoicesWithNameAsValue := make([]*discordgo.ApplicationCommandOptionChoice, len(TenseMoodChoices))
+// tenseMoodMap provides a quick lookup for tense moods by name.
+var tenseMoodMap = createTenseMoodMap()
 
-	for i, choice := range TenseMoodChoices {
-		TenseMoodChoicesWithNameAsValue[i] = &discordgo.ApplicationCommandOptionChoice{
+func createTenseMoodMap() map[string]TenseMood {
+	m := make(map[string]TenseMood)
+	for _, choice := range tenseMoodChoices {
+		m[choice.Name] = choice.Value
+	}
+	return m
+}
+
+// getTenseMoodChoices returns a list of discordgo.ApplicationCommandOptionChoice based on TenseMoodChoices.
+func getTenseMoodChoices() []*discordgo.ApplicationCommandOptionChoice {
+	choices := make([]*discordgo.ApplicationCommandOptionChoice, len(tenseMoodChoices))
+	for i, choice := range tenseMoodChoices {
+		choices[i] = &discordgo.ApplicationCommandOptionChoice{
 			Name:  choice.Name,
 			Value: choice.Name,
 		}
 	}
-
-	return TenseMoodChoicesWithNameAsValue
+	return choices
 }
 
-func GetValueByName(name string) (TenseMood, error) {
-	choicesMap := make(map[string]TenseMood)
-	for _, choice := range TenseMoodChoices {
-		choicesMap[choice.Name] = choice.Value
-	}
-
-	value, ok := choicesMap[name]
+// getValueByName returns the TenseMood for the given name, or an error if not found.
+func getValueByName(name string) (TenseMood, error) {
+	value, ok := tenseMoodMap[name]
 	if !ok {
 		return TenseMood{}, fmt.Errorf("%s: %s", errTenseNameNotFound, name)
 	}
-
 	return value, nil
 }

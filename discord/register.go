@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	ErrCmdCreate = "Cannot create command"
+	errCmdCreate = "Cannot create command"
 )
 
 func registerCommands(s *discordgo.Session, guildID string) error {
@@ -19,11 +19,11 @@ func registerCommands(s *discordgo.Session, guildID string) error {
 	return nil
 }
 
-// RegisterBotCommands registers the commands with Discord and logs any errors.
+// registerBotCommands registers the commands with Discord and logs any errors.
 func registerBotCommands(s *discordgo.Session, guildID string) error {
-	for _, cmd := range commands {
+	for _, cmd := range getCommands() {
 		if _, err := s.ApplicationCommandCreate(s.State.User.ID, guildID, cmd); err != nil {
-			return fmt.Errorf("%s '%v' command: %w", ErrCmdCreate, cmd.Name, err)
+			return fmt.Errorf("%s '%v' command: %w", errCmdCreate, cmd.Name, err)
 		}
 	}
 	return nil

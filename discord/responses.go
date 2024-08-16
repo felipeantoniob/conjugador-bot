@@ -31,12 +31,8 @@ func createConjugationEmbed(infinitive string, verb *db.Verb) *discordgo.Message
 	}
 }
 
-// sendConjugationResponse sends a response with the provided embed message
-func sendConjugationResponse(session *discordgo.Session, interaction *discordgo.Interaction, embed *discordgo.MessageEmbed) {
-	responseData := &discordgo.InteractionResponseData{
-		Embeds: []*discordgo.MessageEmbed{embed},
-	}
-
+// sendInteractionResponse sends a response to the interaction with the provided data
+func sendInteractionResponse(session *discordgo.Session, interaction *discordgo.Interaction, responseData *discordgo.InteractionResponseData) {
 	response := &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: responseData,
@@ -47,18 +43,18 @@ func sendConjugationResponse(session *discordgo.Session, interaction *discordgo.
 	}
 }
 
-// SendErrorInteractionResponse sends an error message as a response to a Discord interaction
-func SendErrorInteractionResponse(session *discordgo.Session, interaction *discordgo.Interaction, errorMessage string) {
+// sendConjugationResponse sends a response with the provided embed message
+func sendConjugationResponse(session *discordgo.Session, interaction *discordgo.Interaction, embed *discordgo.MessageEmbed) {
+	responseData := &discordgo.InteractionResponseData{
+		Embeds: []*discordgo.MessageEmbed{embed},
+	}
+	sendInteractionResponse(session, interaction, responseData)
+}
+
+// sendErrorInteractionResponse sends an error message as a response to a Discord interaction
+func sendErrorInteractionResponse(session *discordgo.Session, interaction *discordgo.Interaction, errorMessage string) {
 	responseData := &discordgo.InteractionResponseData{
 		Content: errorMessage,
 	}
-
-	response := &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: responseData,
-	}
-
-	if err := session.InteractionRespond(interaction, response); err != nil {
-		fmt.Printf("%s: %v\n", errSendingErrorResponse, err)
-	}
+	sendInteractionResponse(session, interaction, responseData)
 }
