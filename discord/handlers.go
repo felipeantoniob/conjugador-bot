@@ -10,6 +10,10 @@ import (
 	"github.com/felipeantoniob/goConjugationBot/db"
 )
 
+var commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
+	"conjugate": handleConjugate,
+}
+
 func onReady(s *discordgo.Session, r *discordgo.Ready) {
 	log.Printf("Logged in as: %v#%v", r.User.Username, r.User.Discriminator)
 }

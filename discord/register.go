@@ -10,10 +10,6 @@ const (
 	ErrCmdCreate = "Cannot create command"
 )
 
-var commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"conjugate": handleConjugate,
-}
-
 func registerCommands(s *discordgo.Session, guildID string) error {
 	if err := registerBotCommands(s, guildID); err != nil {
 		return fmt.Errorf("failed to register bot commands: %w", err)
