@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/felipeantoniob/goConjugationBot/db"
-	"github.com/felipeantoniob/goConjugationBot/utils"
+	"github.com/felipeantoniob/goConjugationBot/internal/db"
+	"github.com/felipeantoniob/goConjugationBot/internal/utils"
 )
 
 const (

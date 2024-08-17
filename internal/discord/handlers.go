@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/felipeantoniob/goConjugationBot/db"
+	"github.com/felipeantoniob/goConjugationBot/internal/db"
 )
 
 var commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){

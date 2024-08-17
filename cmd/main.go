@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/felipeantoniob/goConjugationBot/config"
-	"github.com/felipeantoniob/goConjugationBot/db"
-	"github.com/felipeantoniob/goConjugationBot/discord"
-	"github.com/felipeantoniob/goConjugationBot/utils"
+	"github.com/felipeantoniob/goConjugationBot/internal/db"
+	"github.com/felipeantoniob/goConjugationBot/internal/discord"
+	"github.com/felipeantoniob/goConjugationBot/internal/envconfig"
+	"github.com/felipeantoniob/goConjugationBot/internal/utils"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -28,18 +28,18 @@ func main() {
 
 func run() error {
 	// Load environment variables
-	if err := config.LoadEnv(); err != nil {
+	if err := envconfig.LoadEnv(); err != nil {
 		return utils.WrapError(errEnvLoad, err)
 	}
 
 	// Retrieve required environment variables
-	botToken, guildID, err := config.GetRequiredEnvVars()
+	botToken, guildID, err := envconfig.GetRequiredEnvVars()
 	if err != nil {
 		return utils.WrapError(errRetrieveEnvVars, err)
 	}
 
 	// Initialize the database
-	if err := db.InitDB("./db/verbs.db"); err != nil {
+	if err := db.InitDB("./internal/db/verbs.db"); err != nil {
 		return utils.WrapError(errDBInit, err)
 	}
 	defer closeDatabase()
