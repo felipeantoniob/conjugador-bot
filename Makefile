@@ -2,6 +2,7 @@
 # Variables
 BINARY_NAME=conjugationbot
 BUILD_DIR=bin
+MAIN_PATH=cmd/main.go
 GO=go
 GO_BUILD_FLAGS=
 GO_TEST_FLAGS=-v
@@ -12,12 +13,29 @@ all: build
 # Build the application
 build:
 	@echo "Building $(BINARY_NAME)..."
-	$(GO) build $(GO_BUILD_FLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)
+	$(GO) build $(GO_BUILD_FLAGS) -o $(BUILD_DIR)/$(BINARY_NAME) $(MAIN_PATH)
 
 # Run the application
 run: build
 	@echo "Running $(BINARY_NAME)..."
 	./$(BUILD_DIR)/$(BINARY_NAME)
+
+# Watch for changes and automatically rebuild and run the application
+watch:
+	@if command -v air > /dev/null; then \
+            air; \
+            echo "Watching...";\
+        else \
+            read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
+            if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
+                $(GO) install github.com/air-verse/air@latest; \
+                air; \
+                echo "Watching...";\
+            else \
+                echo "You chose not to install air. Exiting..."; \
+                exit 1; \
+            fi; \
+        fi
 
 # Run tests
 test:
@@ -44,10 +62,11 @@ help:
 	@echo "Makefile commands:"
 	@echo "  make build    - Build the application"
 	@echo "  make run      - Build and run the application"
+	@echo "  make watch    - Watch for changes and automatically rebuild and run the application"
 	@echo "  make test     - Run tests"
 	@echo "  make clean    - Remove build artifacts"
-	@echo "  make format      - Format the code"
+	@echo "  make format   - Format the code"
 	@echo "  make lint     - Lint the code"
 	@echo "  make help     - Show this help message"
 
-.PHONY: all build run test clean format lint help
+.PHONY: all build run watch test clean format lint help
