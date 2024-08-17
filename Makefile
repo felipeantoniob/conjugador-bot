@@ -2,7 +2,7 @@
 # Variables
 BINARY_NAME=conjugationbot
 BUILD_DIR=bin
-MAIN_PATH=cmd/main.go
+MAIN_PATH=cmd/bot/main.go
 GO=go
 GO_BUILD_FLAGS=
 GO_TEST_FLAGS=-v
