@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/felipeantoniob/goConjugationBot/internal/db"
-	"github.com/felipeantoniob/goConjugationBot/internal/discordbot"
-	"github.com/felipeantoniob/goConjugationBot/internal/envconfig"
+	"github.com/felipeantoniob/goConjugationBot/internal/discord"
+	"github.com/felipeantoniob/goConjugationBot/internal/env"
 	"github.com/felipeantoniob/goConjugationBot/internal/utils"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -28,12 +28,12 @@ func main() {
 
 func run() error {
 	// Load environment variables
-	if err := envconfig.LoadEnv(); err != nil {
+	if err := env.LoadEnv(); err != nil {
 		return utils.WrapError(errEnvLoad, err)
 	}
 
 	// Retrieve required environment variables
-	botToken, guildID, err := envconfig.GetRequiredEnvVars()
+	botToken, guildID, err := env.GetRequiredEnvVars()
 	if err != nil {
 		return utils.WrapError(errRetrieveEnvVars, err)
 	}
@@ -44,13 +44,13 @@ func run() error {
 	}
 	defer closeDatabase()
 
-	session, err := discordbot.CreateSession(botToken)
+	session, err := discord.CreateSession(botToken)
 	if err != nil {
 		return err
 	}
-	defer discordbot.CloseSession(session)
+	defer discord.CloseSession(session)
 
-	if err := discordbot.RegisterHandlersAndCommands(session, guildID); err != nil {
+	if err := discord.RegisterHandlersAndCommands(session, guildID); err != nil {
 		return err
 	}
 

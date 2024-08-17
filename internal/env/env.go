@@ -1,4 +1,4 @@
-package envconfig
+package env
 
 import (
 	"fmt"
