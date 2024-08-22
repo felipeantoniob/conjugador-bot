@@ -7,7 +7,7 @@ import (
 	"github.com/felipeantoniob/goConjugationBot/internal/db"
 	"github.com/felipeantoniob/goConjugationBot/internal/discord"
 	"github.com/felipeantoniob/goConjugationBot/internal/env"
-	"github.com/felipeantoniob/goConjugationBot/internal/utils"
+	u "github.com/felipeantoniob/goConjugationBot/internal/utils"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -17,7 +17,11 @@ const (
 	errDiscordWSOpen    = "Error opening websocket connection to Discord"
 	errRegisterCommands = "failed to register commands"
 	errDBInit           = "failed to initialize database"
+	errDBClose          = "error closing database: %v"
 	errRetrieveEnvVars  = "failed to retrieve environment variables"
+
+	msgBotRunning       = "Bot is now running. Press CTRL-C to exit."
+	msgShutdownReceived = "Shutdown signal received, exiting."
 )
 
 func main() {
@@ -27,20 +31,17 @@ func main() {
 }
 
 func run() error {
-	// Load environment variables
 	if err := env.LoadEnv(); err != nil {
-		return utils.WrapError(errEnvLoad, err)
+		return u.WrapError(errEnvLoad, err)
 	}
 
-	// Retrieve required environment variables
 	botToken, guildID, err := env.GetRequiredEnvVars()
 	if err != nil {
-		return utils.WrapError(errRetrieveEnvVars, err)
+		return u.WrapError(errRetrieveEnvVars, err)
 	}
 
-	// Initialize the database
 	if err := db.InitDB("./internal/db/verbs.db"); err != nil {
-		return utils.WrapError(errDBInit, err)
+		return u.WrapError(errDBInit, err)
 	}
 	defer closeDatabase()
 
@@ -54,16 +55,15 @@ func run() error {
 		return err
 	}
 
-	fmt.Println("Bot is now running. Press CTRL-C to exit.")
-	utils.WaitForShutdown()
-	fmt.Println("Shutdown signal received, exiting.")
+	fmt.Println(msgBotRunning)
+	u.WaitForShutdown()
+	fmt.Println(msgShutdownReceived)
 
 	return nil
 }
 
-// closeDatabase closes the database connection and logs any error.
 func closeDatabase() {
 	if err := db.CloseDB(); err != nil {
-		log.Printf("Error closing database: %v", err)
+		log.Printf(errDBClose, err)
 	}
 }

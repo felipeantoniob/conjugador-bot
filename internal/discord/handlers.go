@@ -10,6 +10,15 @@ import (
 	"github.com/felipeantoniob/goConjugationBot/internal/db"
 )
 
+const (
+	errInfinitiveNotFound = "infinitive not found"
+	errTenseNotFound      = "tense not found"
+	errInfinitiveOrTense  = "Infinitive or tense not provided."
+	errTenseData          = "Error getting tense data."
+	errVerbNotFound       = "Verb not found."
+	errQueryingDatabase   = "Error querying database."
+)
+
 var commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 	"conjugate": handleConjugate,
 }
@@ -33,26 +42,25 @@ func handleConjugate(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	infinitive, tense, err := extractInfinitiveAndTense(optionMap)
 	if err != nil {
 		log.Println("Missing required options:", err)
-		sendErrorInteractionResponse(s, i.Interaction, "Infinitive or tense not provided.")
+		sendErrorInteractionResponse(s, i.Interaction, errInfinitiveOrTense)
 		return
 	}
 
 	tenseMoodObject, err := getValueByName(tense)
 	if err != nil {
-		log.Println(errTenseData, err)
-		sendErrorInteractionResponse(s, i.Interaction, "Error getting tense data.")
+		sendErrorInteractionResponse(s, i.Interaction, errTenseData)
 		return
 	}
 
 	verb, err := fetchVerbFromDB(infinitive, tenseMoodObject)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			sendErrorInteractionResponse(s, i.Interaction, "Verb not found.")
+			sendErrorInteractionResponse(s, i.Interaction, errVerbNotFound)
 			return
 		}
 
 		log.Println("Error fetching verb:", err)
-		sendErrorInteractionResponse(s, i.Interaction, "Error querying database.")
+		sendErrorInteractionResponse(s, i.Interaction, errQueryingDatabase)
 		return
 	}
 
@@ -72,13 +80,13 @@ func extractInfinitiveAndTense(optionMap map[string]*discordgo.ApplicationComman
 	if opt, exists := optionMap["infinitive"]; exists {
 		infinitive = opt.StringValue()
 	} else {
-		err = fmt.Errorf("infinitive not found")
+		err = fmt.Errorf(errInfinitiveNotFound)
 	}
 
 	if opt, exists := optionMap["tense"]; exists {
 		tense = opt.StringValue()
 	} else {
-		err = fmt.Errorf("tense not found")
+		err = fmt.Errorf(errTenseNotFound)
 	}
 
 	return infinitive, tense, err

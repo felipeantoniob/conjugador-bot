@@ -9,7 +9,6 @@ import (
 )
 
 const (
-	errTenseData            = "Error getting tense data"
 	errSendingResponse      = "Failed to send interaction response"
 	errSendingErrorResponse = "Failed to send error interaction response"
 )
