@@ -46,7 +46,7 @@ func run() error {
 	}
 	defer closeDatabase()
 
-	session, err := discord.CreateSession(botToken)
+	session, err := discord.CreateSession(botToken, discord.NewSession)
 	if err != nil {
 		return fmt.Errorf("%s: %w", errBotInit, err)
 	}
