@@ -31,7 +31,8 @@ func main() {
 }
 
 func run() error {
-	if err := env.LoadEnv(); err != nil {
+	loader := &env.GodotenvLoader{}
+	if err := env.LoadEnv(loader); err != nil {
 		return fmt.Errorf("%s: %w", errEnvLoad, err)
 	}
 

@@ -17,14 +17,26 @@ const (
 	errMissingVars = "required environment variables are missing: %s"
 )
 
-// LoadEnv loads environment variables from the default file.
-func LoadEnv() error {
-	return LoadEnvFromFile(defaultEnvFilePath)
+// EnvLoader is an interface that abstracts the loading of environment variables.
+type EnvLoader interface {
+	Load(filePath string) error
 }
 
-// LoadEnvFromFile loads environment variables from the specified file.
-func LoadEnvFromFile(envFilePath string) error {
-	if err := godotenv.Load(envFilePath); err != nil {
+// GodotenvLoader is an implementation of EnvLoader using the godotenv package.
+type GodotenvLoader struct{}
+
+func (l *GodotenvLoader) Load(filePath string) error {
+	return godotenv.Load(filePath)
+}
+
+// LoadEnv loads environment variables from the default file path using the provided EnvLoader.
+func LoadEnv(loader EnvLoader) error {
+	return LoadEnvFromFile(defaultEnvFilePath, loader)
+}
+
+// LoadEnvFromFile loads environment variables from the specified file using the provided EnvLoader.
+func LoadEnvFromFile(envFilePath string, loader EnvLoader) error {
+	if err := loader.Load(envFilePath); err != nil {
 		return fmt.Errorf(errLoadEnvFile, envFilePath, err)
 	}
 	return nil
@@ -45,7 +57,7 @@ func GetRequiredEnvVars() (string, string, error) {
 	}
 
 	if len(missingVars) > 0 {
-		return "", "", fmt.Errorf(errMissingVars, missingVars)
+		return botToken, guildID, fmt.Errorf(errMissingVars, missingVars)
 	}
 
 	return botToken, guildID, nil
