@@ -84,12 +84,12 @@ func handleInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
 }
 
 // RegisterCommandsAndHandlers registers event handlers and commands with the Discord session.
-func RegisterCommandsAndHandlers(s *discordgo.Session, guildID string, applicationCommands []CommandHandlerPair) error {
+func RegisterCommandsAndHandlers(s Session, guildID string, applicationCommands []CommandHandlerPair) error {
 	registry := NewCommandRegistry(applicationCommands)
 	cmds := registry.GetCommands()
 
 	for _, cmd := range cmds {
-		if _, err := s.ApplicationCommandCreate(s.State.User.ID, guildID, cmd); err != nil {
+		if _, err := s.ApplicationCommandCreate(s.GetUserID(), guildID, cmd); err != nil {
 			return fmt.Errorf("%s '%s' command: %w", errCmdCreate, cmd.Name, err)
 		}
 	}

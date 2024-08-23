@@ -31,8 +31,7 @@ func main() {
 }
 
 func run() error {
-	loader := &env.GodotenvLoader{}
-	if err := env.LoadEnv(loader); err != nil {
+	if err := env.LoadEnv(&env.GodotenvLoader{}); err != nil {
 		return fmt.Errorf("%s: %w", errEnvLoad, err)
 	}
 
@@ -46,7 +45,7 @@ func run() error {
 	}
 	defer closeDatabase()
 
-	session, err := discord.CreateSession(botToken)
+	session, err := discord.CreateSession(&discord.DefaultSessionFactory{}, botToken)
 	if err != nil {
 		return fmt.Errorf("%s: %w", errBotInit, err)
 	}

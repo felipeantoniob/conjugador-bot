@@ -61,14 +61,14 @@ func TestLoadEnv_ErrorHandling(t *testing.T) {
 func TestLoadEnvFromFile(t *testing.T) {
 	mockLoader := &MockEnvLoader{
 		LoadFunc: func(filePath string) error {
-			if filePath == ".env.local" {
+			if filePath == defaultEnvFilePath {
 				return nil
 			}
 			return fmt.Errorf("unexpected file path: %s", filePath)
 		},
 	}
 
-	err := LoadEnvFromFile(".env.local", mockLoader)
+	err := LoadEnvFromFile(defaultEnvFilePath, mockLoader)
 	if err != nil {
 		t.Fatalf("LoadEnvFromFile() returned an error: %v", err)
 	}
