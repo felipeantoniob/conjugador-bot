@@ -114,30 +114,30 @@ func TestGetRequiredEnvVars(t *testing.T) {
 		{
 			name: "All environment variables set",
 			setEnvVars: func() {
-				os.Setenv(botTokenKey, "test-bot-token")
-				os.Setenv(guildIDKey, "test-guild-id")
+				os.Setenv(botTokenKey, botTokenValue)
+				os.Setenv(guildIDKey, guildIDValue)
 			},
-			expectedBotToken: "test-bot-token",
-			expectedGuildID:  "test-guild-id",
+			expectedBotToken: botTokenValue,
+			expectedGuildID:  guildIDValue,
 			expectedError:    "",
 		},
 		{
 			name: "Bot token missing",
 			setEnvVars: func() {
 				os.Unsetenv(botTokenKey)
-				os.Setenv(guildIDKey, "test-guild-id")
+				os.Setenv(guildIDKey, guildIDValue)
 			},
 			expectedBotToken: "",
-			expectedGuildID:  "test-guild-id",
+			expectedGuildID:  guildIDValue,
 			expectedError:    "required environment variables are missing: [BOT_TOKEN]",
 		},
 		{
 			name: "Guild ID missing",
 			setEnvVars: func() {
-				os.Setenv(botTokenKey, "test-bot-token")
+				os.Setenv(botTokenKey, botTokenValue)
 				os.Unsetenv(guildIDKey)
 			},
-			expectedBotToken: "test-bot-token",
+			expectedBotToken: botTokenValue,
 			expectedGuildID:  "",
 			expectedError:    "required environment variables are missing: [GUILD_ID]",
 		},

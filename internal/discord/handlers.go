@@ -19,22 +19,6 @@ const (
 	errQueryingDatabase   = "Error querying database."
 )
 
-var commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-	"conjugate": handleConjugate,
-}
-
-func onReady(s *discordgo.Session, r *discordgo.Ready) {
-	log.Printf("Logged in as: %v#%v", r.User.Username, r.User.Discriminator)
-}
-
-func handleInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	if handler, ok := commandHandlers[i.ApplicationCommandData().Name]; ok {
-		handler(s, i)
-	} else {
-		log.Printf("No handler found for command: %s", i.ApplicationCommandData().Name)
-	}
-}
-
 func handleConjugate(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	options := i.ApplicationCommandData().Options
 	optionMap := makeOptionMap(options)

@@ -32,12 +32,3 @@ func CloseSession(session *discordgo.Session) {
 		log.Printf("Error closing Discord session: %v", err)
 	}
 }
-
-// RegisterHandlersAndCommands registers event handlers and commands with the Discord session.
-func RegisterHandlersAndCommands(session *discordgo.Session, guildID string) error {
-	session.AddHandler(onReady)
-	if err := registerCommands(session, guildID); err != nil {
-		return fmt.Errorf("%s: %w", errRegisterCommands, err)
-	}
-	return nil
-}

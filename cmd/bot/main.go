@@ -52,7 +52,7 @@ func run() error {
 	}
 	defer discord.CloseSession(session)
 
-	if err := discord.RegisterHandlersAndCommands(session, guildID); err != nil {
+	if err := discord.RegisterCommandsAndHandlers(session, guildID, discord.ApplicationCommands); err != nil {
 		return fmt.Errorf("%s: %w", errRegisterCommands, err)
 	}
 
