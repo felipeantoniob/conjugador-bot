@@ -42,10 +42,17 @@ test:
 	@echo "Running tests..."
 	$(GO) test $(GO_TEST_FLAGS) ./...
 
+# Target to run tests and generate coverage profile
+coverage: 
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report generated at coverage.html"
+
 # Clean build artifacts
 clean:
 	@echo "Cleaning up..."
 	rm -rf $(BUILD_DIR)
+	rm -f coverage.out coverage.html
 
 # Format code
 format:
@@ -69,4 +76,4 @@ help:
 	@echo "  make lint     - Lint the code"
 	@echo "  make help     - Show this help message"
 
-.PHONY: all build run watch test clean format lint help
+.PHONY: all build run watch test coverage clean format lint help

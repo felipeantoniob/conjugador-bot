@@ -12,6 +12,7 @@ const (
 	errSendingErrorResponse = "Failed to send error interaction response"
 )
 
+// createConjugationEmbed generates a Discord embed message for a verb's conjugation
 func createConjugationEmbed(infinitive string, verb *db.Verb) *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
 		Title: fmt.Sprintf("%s - %s", infinitive, db.NullStringToString(verb.VerbEnglish)),
