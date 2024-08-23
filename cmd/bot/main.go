@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/felipeantoniob/goConjugationBot/internal/db"
 	"github.com/felipeantoniob/goConjugationBot/internal/discord"
@@ -20,8 +21,7 @@ const (
 	errDBClose          = "error closing database: %v"
 	errRetrieveEnvVars  = "failed to retrieve environment variables"
 
-	msgBotRunning       = "Bot is now running. Press CTRL-C to exit."
-	msgShutdownReceived = "Shutdown signal received, exiting."
+	msgBotRunning = "Bot is now running. Press CTRL-C to exit."
 )
 
 func main() {
@@ -32,32 +32,34 @@ func main() {
 
 func run() error {
 	if err := env.LoadEnv(); err != nil {
-		return u.WrapError(errEnvLoad, err)
+		return fmt.Errorf("%s: %w", errEnvLoad, err)
 	}
 
 	botToken, guildID, err := env.GetRequiredEnvVars()
 	if err != nil {
-		return u.WrapError(errRetrieveEnvVars, err)
+		return fmt.Errorf("%s: %w", errRetrieveEnvVars, err)
 	}
 
 	if err := db.InitDB("./internal/db/verbs.db"); err != nil {
-		return u.WrapError(errDBInit, err)
+		return fmt.Errorf("%s: %w", errDBInit, err)
 	}
 	defer closeDatabase()
 
 	session, err := discord.CreateSession(botToken)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", errBotInit, err)
 	}
 	defer discord.CloseSession(session)
 
 	if err := discord.RegisterHandlersAndCommands(session, guildID); err != nil {
-		return err
+		return fmt.Errorf("%s: %w", errRegisterCommands, err)
 	}
 
 	fmt.Println(msgBotRunning)
-	u.WaitForShutdown()
-	fmt.Println(msgShutdownReceived)
+
+	sigCh := make(chan os.Signal, 1)
+	sig := u.WaitForShutdown(sigCh)
+	fmt.Printf("Received shutdown signal: %v\n", sig)
 
 	return nil
 }

@@ -5,7 +5,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/felipeantoniob/goConjugationBot/internal/db"
-	"github.com/felipeantoniob/goConjugationBot/internal/utils"
 )
 
 const (
@@ -15,17 +14,17 @@ const (
 
 func createConjugationEmbed(infinitive string, verb *db.Verb) *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
-		Title: fmt.Sprintf("%s - %s", infinitive, utils.NullStringToString(verb.VerbEnglish)),
+		Title: fmt.Sprintf("%s - %s", infinitive, db.NullStringToString(verb.VerbEnglish)),
 		Color: 16711807,
 		Fields: []*discordgo.MessageEmbedField{
 			{Name: "Tiempo", Value: verb.Tense},
 			{Name: "Modo", Value: verb.Mood},
-			{Name: "yo", Value: utils.NullStringToString(verb.Form1s), Inline: true},
-			{Name: "tú", Value: utils.NullStringToString(verb.Form2s), Inline: true},
-			{Name: "él/ella/Ud.", Value: utils.NullStringToString(verb.Form3s), Inline: true},
-			{Name: "nosotros", Value: utils.NullStringToString(verb.Form1p), Inline: true},
-			{Name: "vosotros", Value: utils.NullStringToString(verb.Form2p), Inline: true},
-			{Name: "ellos/ellas/Uds.", Value: utils.NullStringToString(verb.Form3p), Inline: true},
+			{Name: "yo", Value: db.NullStringToString(verb.Form1s), Inline: true},
+			{Name: "tú", Value: db.NullStringToString(verb.Form2s), Inline: true},
+			{Name: "él/ella/Ud.", Value: db.NullStringToString(verb.Form3s), Inline: true},
+			{Name: "nosotros", Value: db.NullStringToString(verb.Form1p), Inline: true},
+			{Name: "vosotros", Value: db.NullStringToString(verb.Form2p), Inline: true},
+			{Name: "ellos/ellas/Uds.", Value: db.NullStringToString(verb.Form3p), Inline: true},
 		},
 	}
 }

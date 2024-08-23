@@ -1,10 +1,10 @@
 package discord
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/felipeantoniob/goConjugationBot/internal/utils"
 )
 
 const (
@@ -17,11 +17,11 @@ const (
 func CreateSession(token string) (*discordgo.Session, error) {
 	session, err := discordgo.New("Bot " + token)
 	if err != nil {
-		return nil, utils.WrapError(errBotInit, err)
+		return nil, fmt.Errorf("%s: %w", errBotInit, err)
 	}
 	session.Identify.Intents = discordgo.IntentsGuildMessages
 	if err := session.Open(); err != nil {
-		return nil, utils.WrapError(errDiscordWSOpen, err)
+		return nil, fmt.Errorf("%s: %w", errDiscordWSOpen, err)
 	}
 	return session, nil
 }
@@ -37,7 +37,7 @@ func CloseSession(session *discordgo.Session) {
 func RegisterHandlersAndCommands(session *discordgo.Session, guildID string) error {
 	session.AddHandler(onReady)
 	if err := registerCommands(session, guildID); err != nil {
-		return utils.WrapError(errRegisterCommands, err)
+		return fmt.Errorf("%s: %w", errRegisterCommands, err)
 	}
 	return nil
 }
