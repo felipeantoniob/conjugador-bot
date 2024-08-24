@@ -45,8 +45,8 @@ test:
 # Target to run tests and generate coverage profile
 coverage: 
 	go test -coverprofile=coverage.out ./...
-	go tool cover -html=coverage.out -o coverage.html
-	@echo "Coverage report generated at coverage.html"
+	go tool cover -html=coverage.out
+	@echo "Coverage report generated"
 
 # Clean build artifacts
 clean:
