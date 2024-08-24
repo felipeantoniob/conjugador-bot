@@ -51,7 +51,7 @@ func run() error {
 	}
 	defer discord.CloseSession(session)
 
-	if err := discord.RegisterCommandsAndHandlers(session, guildID, discord.ApplicationCommands, &discord.DefaultEventHandler{}); err != nil {
+	if err := discord.SetupCommands(session, guildID, discord.CommandRegistry); err != nil {
 		return fmt.Errorf("%s: %w", errRegisterCommands, err)
 	}
 
