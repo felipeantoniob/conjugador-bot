@@ -9,14 +9,6 @@ import (
 	"github.com/felipeantoniob/goConjugationBot/internal/db"
 )
 
-// Mock function for NullStringToString
-func mockNullStringToString(s sql.NullString) string {
-	if s.Valid {
-		return s.String
-	}
-	return ""
-}
-
 func TestCreateConjugationEmbed(t *testing.T) {
 	// Mock verb data
 	verb := &db.Verb{

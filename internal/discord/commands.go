@@ -73,10 +73,18 @@ func init() {
 	}
 }
 
-// handleInteraction routes incoming interactions to the appropriate handler
-func handleInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
+// EventHandler is a type for functions that handle Discord events.
+type EventHandler interface {
+	InteractionHandler(s *discordgo.Session, i *discordgo.InteractionCreate)
+}
+
+type DefaultEventHandler struct {
+	CommandHandlers map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate)
+}
+
+func (d *DefaultEventHandler) InteractionHandler(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	cmdName := i.ApplicationCommandData().Name
-	if handler, exists := commandHandlers[cmdName]; exists {
+	if handler, exists := d.CommandHandlers[cmdName]; exists {
 		handler(s, i)
 	} else {
 		log.Printf(errNoHandlerFound, cmdName)
@@ -84,7 +92,7 @@ func handleInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
 }
 
 // RegisterCommandsAndHandlers registers event handlers and commands with the Discord session.
-func RegisterCommandsAndHandlers(s Session, guildID string, applicationCommands []CommandHandlerPair) error {
+func RegisterCommandsAndHandlers(s Session, guildID string, applicationCommands []CommandHandlerPair, handler EventHandler) error {
 	registry := NewCommandRegistry(applicationCommands)
 	cmds := registry.GetCommands()
 
@@ -94,7 +102,7 @@ func RegisterCommandsAndHandlers(s Session, guildID string, applicationCommands 
 		}
 	}
 
-	s.AddHandler(handleInteraction)
+	s.AddHandler(handler.InteractionHandler)
 
 	return nil
 }

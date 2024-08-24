@@ -7,11 +7,6 @@ import (
 	"github.com/felipeantoniob/goConjugationBot/internal/db"
 )
 
-const (
-	errSendingResponse      = "Failed to send interaction response"
-	errSendingErrorResponse = "Failed to send error interaction response"
-)
-
 // createConjugationEmbed generates a Discord embed message for a verb's conjugation
 func createConjugationEmbed(infinitive string, verb *db.Verb) *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
