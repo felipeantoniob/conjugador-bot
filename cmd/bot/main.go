@@ -40,7 +40,7 @@ func run() error {
 		return fmt.Errorf("%s: %w", errRetrieveEnvVars, err)
 	}
 
-	if err := db.InitDB("./internal/db/verbs.db"); err != nil {
+	if err := db.InitDB("sqlite3", "./internal/db/verbs.db"); err != nil {
 		return fmt.Errorf("%s: %w", errDBInit, err)
 	}
 	defer closeDatabase()
