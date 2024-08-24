@@ -14,6 +14,16 @@ const (
 	errRegisterCommands = "failed to register commands"
 )
 
+// Session represents a Discord session and provides methods for interacting with it.
+type Session interface {
+	Open() error
+	Close() error
+	ApplicationCommandCreate(appID string, guildID string, cmd *discordgo.ApplicationCommand, options ...discordgo.RequestOption) (*discordgo.ApplicationCommand, error)
+	AddHandler(handler interface{}) func()
+	GetUserID() string
+	SetIntents(intents discordgo.Intent)
+}
+
 // SessionFactory is an interface for creating new Discord sessions.
 type SessionFactory interface {
 	New(token string) (Session, error)
@@ -29,16 +39,6 @@ func (f *DefaultSessionFactory) New(token string) (Session, error) {
 		return nil, err
 	}
 	return &DiscordSession{session}, nil
-}
-
-// Session represents a Discord session and provides methods for interacting with it.
-type Session interface {
-	Open() error
-	Close() error
-	ApplicationCommandCreate(appID string, guildID string, cmd *discordgo.ApplicationCommand, options ...discordgo.RequestOption) (*discordgo.ApplicationCommand, error)
-	AddHandler(handler interface{}) func()
-	GetUserID() string
-	SetIntents(intents discordgo.Intent)
 }
 
 // DiscordSession wraps a discordgo.Session and provides additional functionality.
@@ -71,21 +71,47 @@ func (ds *DiscordSession) GetUserID() string {
 	return ds.State.User.ID
 }
 
+// SetIntents sets the intents for the session.
 func (ds *DiscordSession) SetIntents(intent discordgo.Intent) {
 	ds.Identify.Intents = intent
 }
 
+// InteractionRespond sends a response to a Discord interaction.
+func (s *DiscordSession) InteractionRespond(interaction *discordgo.Interaction, response *discordgo.InteractionResponse) error {
+	return s.Session.InteractionRespond(interaction, response)
+}
+
 // CreateSession initializes a new Discord session with the provided factory and token.
 func CreateSession(factory SessionFactory, token string) (Session, error) {
+	session, err := createAndConfigureSession(factory, token)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := openSession(session); err != nil {
+		return nil, err
+	}
+
+	return session, nil
+}
+
+// createAndConfigureSession creates a new session and configures it.
+func createAndConfigureSession(factory SessionFactory, token string) (Session, error) {
 	session, err := factory.New(token)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", errBotInit, err)
 	}
+
 	session.SetIntents(discordgo.IntentsGuildMessages)
-	if err := session.Open(); err != nil {
-		return nil, fmt.Errorf("%s: %w", errDiscordWSOpen, err)
-	}
 	return session, nil
+}
+
+// openSession opens the session and handles errors.
+func openSession(session Session) error {
+	if err := session.Open(); err != nil {
+		return fmt.Errorf("%s: %w", errDiscordWSOpen, err)
+	}
+	return nil
 }
 
 // CloseSession gracefully closes the given Discord session and logs any error.

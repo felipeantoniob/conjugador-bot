@@ -30,30 +30,35 @@ func createConjugationEmbed(infinitive string, verb *db.Verb) *discordgo.Message
 	}
 }
 
+// InteractionResponder defines an interface for sending interaction responses
+type InteractionResponder interface {
+	InteractionRespond(interaction *discordgo.Interaction, response *discordgo.InteractionResponse) error
+}
+
 // sendInteractionResponse sends a response to the interaction with the provided data
-func sendInteractionResponse(session *discordgo.Session, interaction *discordgo.Interaction, responseData *discordgo.InteractionResponseData) {
+func sendInteractionResponse(responder InteractionResponder, interaction *discordgo.Interaction, responseData *discordgo.InteractionResponseData) {
 	response := &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: responseData,
 	}
 
-	if err := session.InteractionRespond(interaction, response); err != nil {
-		fmt.Printf("%s: %v\n", errSendingResponse, err)
+	if err := responder.InteractionRespond(interaction, response); err != nil {
+		fmt.Printf("Error sending response: %v\n", err)
 	}
 }
 
 // sendConjugationResponse sends a response with the provided embed message
-func sendConjugationResponse(session *discordgo.Session, interaction *discordgo.Interaction, embed *discordgo.MessageEmbed) {
+func sendConjugationResponse(responder InteractionResponder, interaction *discordgo.Interaction, embed *discordgo.MessageEmbed) {
 	responseData := &discordgo.InteractionResponseData{
 		Embeds: []*discordgo.MessageEmbed{embed},
 	}
-	sendInteractionResponse(session, interaction, responseData)
+	sendInteractionResponse(responder, interaction, responseData)
 }
 
 // sendErrorInteractionResponse sends an error message as a response to a Discord interaction
-func sendErrorInteractionResponse(session *discordgo.Session, interaction *discordgo.Interaction, errorMessage string) {
+func sendErrorInteractionResponse(responder InteractionResponder, interaction *discordgo.Interaction, errorMessage string) {
 	responseData := &discordgo.InteractionResponseData{
 		Content: errorMessage,
 	}
-	sendInteractionResponse(session, interaction, responseData)
+	sendInteractionResponse(responder, interaction, responseData)
 }

@@ -26,30 +26,30 @@ func handleConjugate(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	infinitive, tense, err := extractInfinitiveAndTense(optionMap)
 	if err != nil {
 		log.Println("Missing required options:", err)
-		sendErrorInteractionResponse(s, i.Interaction, errInfinitiveOrTense)
+		sendErrorInteractionResponse(&DiscordSession{s}, i.Interaction, errInfinitiveOrTense)
 		return
 	}
 
 	tenseMoodObject, err := getValueByName(tense)
 	if err != nil {
-		sendErrorInteractionResponse(s, i.Interaction, errTenseData)
+		sendErrorInteractionResponse(&DiscordSession{s}, i.Interaction, errTenseData)
 		return
 	}
 
 	verb, err := fetchVerbFromDB(infinitive, tenseMoodObject)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			sendErrorInteractionResponse(s, i.Interaction, errVerbNotFound)
+			sendErrorInteractionResponse(&DiscordSession{s}, i.Interaction, errVerbNotFound)
 			return
 		}
 
 		log.Println("Error fetching verb:", err)
-		sendErrorInteractionResponse(s, i.Interaction, errQueryingDatabase)
+		sendErrorInteractionResponse(&DiscordSession{s}, i.Interaction, errQueryingDatabase)
 		return
 	}
 
 	conjugationEmbed := createConjugationEmbed(infinitive, verb)
-	sendConjugationResponse(s, i.Interaction, conjugationEmbed)
+	sendConjugationResponse(&DiscordSession{s}, i.Interaction, conjugationEmbed)
 }
 
 func makeOptionMap(options []*discordgo.ApplicationCommandInteractionDataOption) map[string]*discordgo.ApplicationCommandInteractionDataOption {
