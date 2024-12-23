@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/felipeantoniob/goConjugationBot/internal/db"
-	"github.com/felipeantoniob/goConjugationBot/internal/discord"
-	"github.com/felipeantoniob/goConjugationBot/internal/env"
-	u "github.com/felipeantoniob/goConjugationBot/internal/utils"
+	"github.com/felipeantoniob/conjugador-bot/internal/db"
+	"github.com/felipeantoniob/conjugador-bot/internal/discord"
+	"github.com/felipeantoniob/conjugador-bot/internal/env"
+	u "github.com/felipeantoniob/conjugador-bot/internal/utils"
 	_ "github.com/mattn/go-sqlite3"
 )
 

@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/felipeantoniob/goConjugationBot/internal/db"
+	"github.com/felipeantoniob/conjugador-bot/internal/db"
 )
 
 const (

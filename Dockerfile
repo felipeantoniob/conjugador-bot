@@ -18,7 +18,7 @@ COPY . .
 
 
 # Build the Go app
-RUN go build -o goConjugationBot .
+RUN go build -o conjugador-bot .
 
 # Command to run the executable
-CMD ["./goConjugationBot"]
+CMD ["./conjugador-bot"]

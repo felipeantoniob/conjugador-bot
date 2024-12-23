@@ -1,4 +1,4 @@
-module github.com/felipeantoniob/goConjugationBot
+module github.com/felipeantoniob/conjugador-bot
 
 go 1.22.1
 

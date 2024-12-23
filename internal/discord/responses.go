@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/felipeantoniob/goConjugationBot/internal/db"
+	"github.com/felipeantoniob/conjugador-bot/internal/db"
 )
 
 // createConjugationEmbed generates a Discord embed message for a verb's conjugation
