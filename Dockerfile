@@ -1,8 +1,8 @@
 # Start with a base Go image
 FROM golang:1.22-alpine
 
-# Install SQLite3 dependencies
-RUN apk add --no-cache gcc musl-dev sqlite-dev
+# Install dependencies
+RUN apk add --no-cache gcc musl-dev sqlite-dev make
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -16,9 +16,8 @@ RUN go mod tidy
 # Copy the source code into the container
 COPY . .
 
-
 # Build the Go app
-RUN go build -o conjugador-bot .
+RUN make build
 
-# Command to run the executable
-CMD ["./conjugador-bot"]
+# Set the entry point for the container
+ENTRYPOINT ["./bin/conjugador-bot"]

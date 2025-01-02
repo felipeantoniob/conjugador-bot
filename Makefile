@@ -1,6 +1,6 @@
 
 # Variables
-BINARY_NAME=conjugationbot
+BINARY_NAME=conjugador-bot
 BUILD_DIR=bin
 MAIN_PATH=cmd/bot/main.go
 GO=go
